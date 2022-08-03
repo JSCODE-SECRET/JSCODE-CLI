@@ -1,0 +1,16 @@
+{
+  "name": "jscode-cli",
+  "version": "0.0.1",
+  "description": "JSCODE CLI Program",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "JSCODE",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.0.1",
+    "commander": "^9.4.0",
+    "jest": "^28.1.3"
+  }
+}
