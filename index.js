@@ -4,21 +4,32 @@ const fs = require("fs");
 // $ jscode-cli nest g domain <domainName>
 const isRightCommand = process.argv[2] === "nest" && (process.argv[3] === "g" || process.argv[3] === "generate") && (process.argv[4] === "domain");
 if (!isRightCommand) {
-  throw new Error("없는 명령어입니다.");
+  throw new Error("잘못된 명령어입니다.");
 }
-console.log(process.argv);
+
+const createDirIfNotExist = (absolutePath) => {
+  if (!fs.existsSync(absolutePath)) {
+    fs.mkdirSync(absolutePath);
+  }
+}
+
+const createFileIfNotExist = (absolutePath, data) => {
+  if (!fs.existsSync(absolutePath)) {
+    createFileIfNotExist(absolutePath, data);
+  }
+}
 
 const domainName = process.argv[5];
 const domainNameCapitalizedFirstChar = domainName.charAt(0).toUpperCase() + domainName.slice(1);
 
-fs.mkdirSync(`src`)
-fs.mkdirSync(`src/${domainName}`)
-fs.mkdirSync(`src/${domainName}/application`)
-fs.mkdirSync(`src/${domainName}/application/requestDto`)
-fs.mkdirSync(`src/${domainName}/application/responseDto`)
-fs.mkdirSync(`src/${domainName}/domain`)
-fs.mkdirSync(`src/${domainName}/presentation`)
-fs.mkdirSync(`src/${domainName}/test`)
+createDirIfNotExist(`src`)
+createDirIfNotExist(`src/${domainName}`)
+createDirIfNotExist(`src/${domainName}/application`)
+createDirIfNotExist(`src/${domainName}/application/requestDto`)
+createDirIfNotExist(`src/${domainName}/application/responseDto`)
+createDirIfNotExist(`src/${domainName}/domain`)
+createDirIfNotExist(`src/${domainName}/presentation`)
+createDirIfNotExist(`src/${domainName}/test`)
 
 const moduleTemplate = `import { Module } from "@nestjs/common";
 import { ${domainNameCapitalizedFirstChar}Service } from "./application/${domainName}.service";
@@ -31,7 +42,7 @@ import { ${domainNameCapitalizedFirstChar}Controller } from "./presentation/${do
 })
 export class ${domainNameCapitalizedFirstChar}Module {}
 `
-fs.writeFileSync(`src/${domainName}/${domainName}.module.ts`, moduleTemplate);
+createFileIfNotExist(`src/${domainName}/${domainName}.module.ts`, moduleTemplate)
 
 const serviceTemplate = `import { Injectable } from "@nestjs/common";
 import { DataSource } from "typeorm";
@@ -45,7 +56,7 @@ export class ${domainNameCapitalizedFirstChar}Service {
   ) {}
 }
 `
-fs.writeFileSync(`src/${domainName}/application/${domainName}.service.ts`, serviceTemplate);
+createFileIfNotExist(`src/${domainName}/application/${domainName}.service.ts`, serviceTemplate);
 const entityTemplate = `import { Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "${domainName}s" })
@@ -54,7 +65,7 @@ export class ${domainNameCapitalizedFirstChar} {
   id: number;
 }
 `
-fs.writeFileSync(`src/${domainName}/domain/${domainName}.entity.ts`, entityTemplate);
+createFileIfNotExist(`src/${domainName}/domain/${domainName}.entity.ts`, entityTemplate);
 
 const repositoryTemplate = `import { ${domainNameCapitalizedFirstChar}Repository } from "../../common/decorators/typeorm-ex.decorator";
 import { Repository } from "typeorm";
@@ -64,7 +75,7 @@ import { ${domainNameCapitalizedFirstChar} } from "./${domainName}.entity";
 export class ${domainNameCapitalizedFirstChar}Repository extends Repository<${domainNameCapitalizedFirstChar}> {
 }
 `
-fs.writeFileSync(`src/${domainName}/domain/${domainName}.repository.ts`, repositoryTemplate);
+createFileIfNotExist(`src/${domainName}/domain/${domainName}.repository.ts`, repositoryTemplate);
 
 const controllerTemplate = `import { Controller } from "@nestjs/common";
 import { ${domainNameCapitalizedFirstChar}Service } from "../application/${domainName}.service";
@@ -79,6 +90,6 @@ export class ${domainNameCapitalizedFirstChar}Controller {
 
 }
 `
-fs.writeFileSync(`src/${domainName}/presentation/${domainName}.controller.ts`, controllerTemplate);
+createFileIfNotExist(`src/${domainName}/presentation/${domainName}.controller.ts`, controllerTemplate);
 
 
