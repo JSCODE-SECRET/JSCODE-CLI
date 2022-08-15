@@ -82,7 +82,7 @@ const controllerTemplate = `import { Controller } from "@nestjs/common";
 import { ${domainNameCapitalizedFirstChar}Service } from "../application/${domainName}.service";
 import { ApiTags } from "@nestjs/swagger";
 
-@ApiTags('${domainName}s - 팔로워 관련')
+@ApiTags('${domainName}s - _____ 관련')
 @Controller('${domainName}s')
 export class ${domainNameCapitalizedFirstChar}Controller {
   constructor(
@@ -94,9 +94,11 @@ export class ${domainNameCapitalizedFirstChar}Controller {
 createFileIfNotExist(`src/${domainName}/presentation/${domainName}.controller.ts`, controllerTemplate);
 
 
-glob("./**/app.module.ts", (err, files) => {
+glob("src/**/app.module.ts", (err, files) => {
   if (err) throw err;
   const filePath = files[0];
+  console.log("filePath")
+  console.log(filePath);
   fs.readFile(filePath, function read(err, data) {
     if (err) {
       throw err;
