@@ -1,6 +1,6 @@
 {
   "name": "@jscode-secret/cli",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "JSCODE CLI Program",
   "main": "index.js",
   "scripts": {
