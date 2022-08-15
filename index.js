@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const fs = require("fs");
+const glob = require("glob");
 
 // $ jscode-cli nest g domain <domainName>
 const isRightCommand = process.argv[2] === "nest" && (process.argv[3] === "g" || process.argv[3] === "generate") && (process.argv[4] === "domain");
@@ -15,7 +16,7 @@ const createDirIfNotExist = (absolutePath) => {
 
 const createFileIfNotExist = (absolutePath, data) => {
   if (!fs.existsSync(absolutePath)) {
-    createFileIfNotExist(absolutePath, data);
+    fs.writeFileSync(absolutePath, data);
   }
 }
 
@@ -93,3 +94,23 @@ export class ${domainNameCapitalizedFirstChar}Controller {
 createFileIfNotExist(`src/${domainName}/presentation/${domainName}.controller.ts`, controllerTemplate);
 
 
+glob("./**/app.module.ts", (err, files) => {
+  if (err) throw err;
+  const filePath = files[0];
+  fs.readFile(filePath, function read(err, data) {
+    if (err) {
+      throw err;
+    }
+    let fileContent = data.toString();
+    if (fileContent.indexOf(`${domainNameCapitalizedFirstChar}Module`) === -1) {
+      fileContent = `import { ${domainNameCapitalizedFirstChar}Module } from "./${domainName}/${domainName}.module";\n` + fileContent;
+      const index = fileContent.indexOf('imports');
+      const braceStartIndex = fileContent.indexOf("[", index);
+      const braceEndIndex = fileContent.indexOf("]", index);
+      let firstSlice = fileContent.slice(braceStartIndex, braceEndIndex);
+      const modifiedSlice = firstSlice + `  ${domainNameCapitalizedFirstChar}Module,\n  `
+      const replacedFileContent = fileContent.replace(firstSlice, modifiedSlice);
+      fs.writeFileSync(filePath, replacedFileContent);
+    }
+  })
+})
