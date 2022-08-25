@@ -35,9 +35,11 @@ createDirIfNotExist(`src/${domainName}/test`)
 const moduleTemplate = `import { Module } from "@nestjs/common";
 import { ${domainNameCapitalizedFirstChar}Service } from "./application/${domainName}.service";
 import { ${domainNameCapitalizedFirstChar}Controller } from "./presentation/${domainName}.controller";
+import { TypeOrmExModule } from "../common/decorators/typeorm-ex.module";
+import { ${domainNameCapitalizedFirstChar}Repository } from "./domain/${domainName}.repository";
 
 @Module({
-  imports: [],
+  imports: [TypeOrmExModule.forCustomerRepository([${domainNameCapitalizedFirstChar}Repository])],
   controllers: [${domainNameCapitalizedFirstChar}Controller],
   providers: [${domainNameCapitalizedFirstChar}Service],
 })
@@ -68,7 +70,7 @@ export class ${domainNameCapitalizedFirstChar} {
 `
 createFileIfNotExist(`src/${domainName}/domain/${domainName}.entity.ts`, entityTemplate);
 
-const repositoryTemplate = `import { ${domainNameCapitalizedFirstChar}Repository } from "../../common/decorators/typeorm-ex.decorator";
+const repositoryTemplate = `import { CustomRepository } from "../../common/decorators/typeorm-ex.decorator";
 import { Repository } from "typeorm";
 import { ${domainNameCapitalizedFirstChar} } from "./${domainName}.entity";
 
@@ -97,8 +99,6 @@ createFileIfNotExist(`src/${domainName}/presentation/${domainName}.controller.ts
 glob("src/**/app.module.ts", (err, files) => {
   if (err) throw err;
   const filePath = files[0];
-  console.log("filePath")
-  console.log(filePath);
   fs.readFile(filePath, function read(err, data) {
     if (err) {
       throw err;
